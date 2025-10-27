@@ -9,6 +9,7 @@ from torchtune.data._prompt_templates import _get_prompt_template, _TemplateType
 
 from torchtune.models.qwen2._component_builders import lora_qwen2, qwen2
 from torchtune.models.qwen2_5._tokenizer import QWEN2_5_SPECIAL_TOKENS, Qwen2_5Tokenizer
+from torchtune.models.qwen2_5._tokenizer import QWEN2_5_AM_SPECIAL_TOKENS, Qwen2_5_AM_Tokenizer
 from torchtune.modules import TransformerDecoder
 from torchtune.modules.peft import LORA_ATTN_MODULES
 from torchtune.modules.transforms.tokenizers import parse_hf_tokenizer_json
@@ -45,6 +46,31 @@ def qwen2_5_0_5b() -> TransformerDecoder:
         tie_word_embeddings=True,
     )
 
+
+def qwen2_5_0_5b_am() -> TransformerDecoder:
+    """
+    Builder for creating a Qwen2.5 model (base or instruct) initialized w/ the default 0.5B parameter values
+    from https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
+
+    Returns:
+        TransformerDecoder: Instantiation of Qwen2.5 0.5B model
+
+    Note:
+        Qwen2.5 0.5B-3B model builders will enable ``tie_word_embeddings`` by default (see :func:`~torchtune.models.qwen2.qwen2`)
+    """
+    return qwen2(
+        vocab_size=166690,
+        num_layers=24,
+        num_heads=14,
+        num_kv_heads=2,
+        embed_dim=896,
+        intermediate_dim=4864,
+        max_seq_len=32768,
+        attn_dropout=0.0,
+        norm_eps=1e-06,
+        rope_base=1000000.0,
+        tie_word_embeddings=False,
+    )
 
 def qwen2_5_1_5b_base() -> TransformerDecoder:
     """
@@ -389,6 +415,61 @@ def qwen2_5_tokenizer(
         truncation_type=truncation_type,
         **kwargs,
     )
+
+
+
+def qwen2_5_am_tokenizer(
+    path: str,
+    merges_file: str,
+    special_tokens_path: Optional[str] = None,
+    max_seq_len: Optional[int] = None,
+    prompt_template: Optional[_TemplateType] = None,
+    truncation_type: str = "right",
+    **kwargs,
+) -> Qwen2_5_AM_Tokenizer:
+    """
+    Tokenizer for Qwen2.5.
+
+    Args:
+        path (str): path to the vocab.json file.
+        merges_file (str): path to the merges.txt file.
+        special_tokens_path (Optional[str]): Path to ``tokenizer.json`` from Hugging Face
+            model files that contains all registered special tokens, or a local json file
+            structured similarly. Default is None to use the canonical Qwen2.5 special tokens.
+        max_seq_len (Optional[int]): A max sequence length to truncate tokens to.
+            Default: None
+        prompt_template (Optional[_TemplateType]): optional specified prompt template.
+            If a string, it is assumed to be the dotpath of a :class:`~torchtune.data.PromptTemplateInterface`
+            class. If a dictionary, it is assumed to be a custom prompt template mapping role to the
+            prepend/append tags.
+            Default is None.
+        truncation_type (str): type of truncation to apply, either "left" or "right".
+            Default is "right".
+
+    Returns:
+        Qwen2_5Tokenizer: Instantiation of the Qwen2.5 tokenizer
+    """
+    special_tokens = (
+        QWEN2_5_AM_SPECIAL_TOKENS
+        if special_tokens_path is None
+        else parse_hf_tokenizer_json(special_tokens_path)
+    )
+
+    if prompt_template is not None:
+        prompt_template = _get_prompt_template(prompt_template)
+
+    return Qwen2_5_AM_Tokenizer(
+        path=path,
+        merges_file=merges_file,
+        special_tokens=special_tokens,
+        max_seq_len=max_seq_len,
+        # prompt_template=prompt_template,
+        # truncation_type=truncation_type,
+        **kwargs,
+    )
+
+
+
 
 
 def lora_qwen2_5_0_5b(

@@ -24,6 +24,12 @@ from torchtune.datasets._text_completion import (
 )
 from torchtune.datasets._wikitext import wikitext_dataset
 
+from torchtune.datasets._meco import (
+    sft_dataset_mhubert_1000,
+    ntp_dataset_mhubert_1000,
+    icl_dataset_mhubert_1000,
+)
+
 __all__ = [
     "alpaca_dataset",
     "alpaca_cleaned_dataset",
@@ -44,4 +50,6 @@ __all__ = [
     "SFTDataset",
     "hh_rlhf_helpful_dataset",
     "multimodal",
+    "sft_dataset_mhubert_1000",
+    "ntp_dataset_mhubert_1000",
 ]

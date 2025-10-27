@@ -384,6 +384,15 @@ class FullFinetuneRecipeDistributed(FTRecipeInterface):
             ac_mode=cfg.get("ac_mode", None),
             ac_option=cfg.get("ac_option", None),
         )
+
+        freeze_body = cfg.pop("freeze_body", False)
+        if freeze_body:
+            for param in self._model.named_parameters():
+                if param[0] not in ["tok_embeddings.weight", "output.weight"]:
+                    param[1].requires_grad = False
+                    print(param[0], "frozen")
+        
+        
         self._tokenizer = config.instantiate(cfg.tokenizer)
 
         if cfg.get("resize_token_embeddings", False):

@@ -253,3 +253,74 @@ class Qwen2_5Tokenizer(Qwen2Tokenizer):  # noqa: N801
     def _add_message_end_tokens(self, tokens):
         tokens.append(self.im_end_id)
         tokens.extend(self.encode("\n", add_bos=False, add_eos=False))
+
+
+
+
+QWEN2_5_AM_SPECIAL_TOKENS = {
+    "<|endoftext|>": 151643,
+    "<|im_start|>": 151644,
+    "<|im_end|>": 151645,
+    "<|audio_end|>": 151666,
+    "<|audio_start|>": 151665,
+    "<|motion_start|>": 151667,
+    "<|motion_end|>": 151668,
+
+    "<|object_ref_start|>": 151646,
+    "<|object_ref_end|>": 151647,
+    "<|box_start|>": 151648,
+    "<|box_end|>": 151649,
+    "<|quad_start|>": 151650,
+    "<|quad_end|>": 151651,
+    "<|vision_start|>": 151652,
+    "<|vision_end|>": 151653,
+    "<|vision_pad|>": 151654,
+    "<|image_pad|>": 151655,
+    "<|video_pad|>": 151656,
+    "<tool_call>": 151657,
+    "</tool_call>": 151658,
+    "<|fim_prefix|>": 151659,
+    "<|fim_middle|>": 151660,
+    "<|fim_suffix|>": 151661,
+    "<|fim_pad|>": 151662,
+    "<|repo_name|>": 151663,
+    "<|file_sep|>": 151664,
+    
+}
+
+for i in range(69,90):
+    QWEN2_5_AM_SPECIAL_TOKENS[f"<|reserved_special_token_{i}|>"] = 151600 + i
+for i in range(5000):
+    QWEN2_5_AM_SPECIAL_TOKENS[f"<|audio_{i:04d}|>"] = 151690 + i
+for i in range(10000):
+    QWEN2_5_AM_SPECIAL_TOKENS[f"<|motion_{i:04d}|>"] = 156690 + i
+
+class Qwen2_5_AM_Tokenizer(Qwen2_5Tokenizer):
+    def __init__(
+        self,
+        path: str,
+        merges_file: str,
+        special_tokens: Optional[dict[str, int]] = QWEN2_5_AM_SPECIAL_TOKENS,
+        max_seq_len: Optional[int] = None,
+        *,
+        errors: str = "replace",
+        unk_token: Optional[str] = ENDOFTEXT,
+        bos_token: Optional[str] = None,
+        eos_token: str = ENDOFTEXT,
+        pad_token: Optional[str] = ENDOFTEXT,
+        bpe_cache_size: int = DEFAULT_QWEN2_TOKENIZER_BPE_CACHE_SIZE,
+    ):
+        super().__init__(
+            path=path,
+            merges_file=merges_file,
+            special_tokens=special_tokens,
+            max_seq_len=max_seq_len,
+            errors=errors,
+            unk_token=unk_token,
+            bos_token=bos_token,
+            eos_token=eos_token,
+            pad_token=pad_token,
+            bpe_cache_size=bpe_cache_size
+        )
+
+
